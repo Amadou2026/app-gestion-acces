@@ -3,7 +3,7 @@ import { Navbar, Container, Button, Image } from 'react-bootstrap';
 import { FiLogOut } from 'react-icons/fi';
 
 // Remplace ce chemin par le bon si nécessaire
-import logo from '../assets/logos/logosv.png';
+import logo from '../assets/logos/Ork1.png';
 
 export default function HeaderDashboard({ onLogout }) {
   return (
@@ -12,7 +12,7 @@ export default function HeaderDashboard({ onLogout }) {
         {/* Logo */}
         <Navbar.Brand className="d-flex align-items-center">
           <Image src={logo} alt="Logo" height="40" className="me-2" />
-          <span className="fw-bold fs-5">Tableau de bord</span>
+          <span className="fw-bold fs-5"></span>
         </Navbar.Brand>
 
         {/* Bouton Déconnexion */}
