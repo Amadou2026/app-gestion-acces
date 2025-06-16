@@ -25,7 +25,7 @@ code {
 
 /* Style des liens Nav */
 .sidebar-container .nav-link {
-  color: #155724; /* texte vert foncé */
+  color: #fff;
   font-weight: 500;
   transition: background-color 0.3s, color 0.3s;
   cursor: pointer;
@@ -56,7 +56,7 @@ code {
 }
 
 .sidebar-container::-webkit-scrollbar-thumb {
-  background-color: rgba(40, 167, 69, 0.6);
+  background-color: rgba(255, 255, 255, 0);
   border-radius: 23px;
 }
 

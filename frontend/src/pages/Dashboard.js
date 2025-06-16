@@ -39,6 +39,7 @@ export default function DashboardPage() {
             >
               <iframe
                 title="Dashboard Startup Village"
+                
                 src="https://app.powerbi.com/reportEmbed?reportId=90b45cc8-de7b-4e13-952b-88a82691897d&autoAuth=true&ctid=db6e7c35-4aaa-4d38-90d9-ec8a999df70c&navContentPaneEnabled=false&filterPaneEnabled=false&toolBarVisible=false"
                 style={{
                   position: "absolute",

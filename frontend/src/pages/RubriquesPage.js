@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import HeaderDashboard from "../component/HeaderDashboard";
 import Sidebar from "../component/Sidebar";
@@ -10,17 +10,47 @@ export default function RubriquePage() {
   const { logout, user } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  const [rubriquePowerbiUrl, setRubriquePowerbiUrl] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   const handleLogout = () => {
     logout();
     navigate("/");
   };
 
-  // Recherche de l'URL Power BI à partir des permissions utilisateur
-  const permission = user?.permissions?.find(
-    (perm) => perm.rubrique_slug === rubriqueSlug
-  );
+  useEffect(() => {
+    const fetchAccess = async () => {
+      const token = localStorage.getItem("accessToken");
 
-  const srcIframe = permission?.rubrique_powerbi_url || "https://app.powerbi.com"; // URL par défaut si non trouvée
+      try {
+        const res = await fetch("http://localhost:8000/api/user-access/", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!res.ok) throw new Error("Erreur d’accès aux données");
+
+        const accessData = await res.json();
+        const rubrique = accessData.find((item) => item.slug === rubriqueSlug);
+
+        if (rubrique?.rubrique_powerbi_url) {
+          setRubriquePowerbiUrl(rubrique.rubrique_powerbi_url);
+        } else {
+          setRubriquePowerbiUrl(null);
+        }
+
+      } catch (err) {
+        console.error("Erreur lors du chargement de l'accès utilisateur", err);
+        setRubriquePowerbiUrl(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAccess();
+  }, [rubriqueSlug]);
 
   return (
     <div className="d-flex flex-column min-vh-100">
@@ -46,20 +76,30 @@ export default function RubriquePage() {
             overflow: "hidden",
           }}
         >
-          <iframe
-            title={`Dashboard ${rubriqueSlug}`}
-            src={srcIframe}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              border: "none",
-              zIndex: 1,
-            }}
-            allowFullScreen
-          />
+          {loading ? (
+            <div className="d-flex justify-content-center align-items-center h-100">
+              <p>Chargement en cours...</p>
+            </div>
+          ) : rubriquePowerbiUrl ? (
+            <iframe
+              title={`Dashboard ${rubriqueSlug}`}
+              src={rubriquePowerbiUrl}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                border: "none",
+                zIndex: 1,
+              }}
+              allowFullScreen
+            />
+          ) : (
+            <div className="d-flex justify-content-center align-items-center h-100">
+              <h4>Aucun rapport Power BI disponible pour cette rubrique.</h4>
+            </div>
+          )}
         </main>
       </div>
 

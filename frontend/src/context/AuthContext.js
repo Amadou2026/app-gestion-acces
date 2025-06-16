@@ -1,22 +1,21 @@
-// src/context/AuthContext.js
 import { createContext, useEffect, useState } from "react";
 
 export const AuthContext = createContext();
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);  // Ajout du loading
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      // Tenter de récupérer les infos utilisateur en local
       const storedUser = localStorage.getItem("userData");
       if (storedUser) {
         setUser(JSON.parse(storedUser));
+        setLoading(false);  // fini le chargement
         return;
       }
 
-      // Sinon, fetch les infos depuis l'API
       fetch("http://localhost:8000/api/user-access/", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -28,7 +27,6 @@ export default function AuthProvider({ children }) {
           return res.json();
         })
         .then((data) => {
-          // Extrait la rubrique principale depuis permissions (première rubrique)
           const permissions = data.permissions || [];
           let rubriquePrincipale = null;
           if (permissions.length > 0) {
@@ -41,19 +39,23 @@ export default function AuthProvider({ children }) {
             lastName: data.last_name,
             email: data.email,
             role: data.role,
-            permissions: permissions,
+            permissions,
             rubriquePrincipale,
           };
 
           setUser(userData);
           localStorage.setItem("userData", JSON.stringify(userData));
+          setLoading(false);  // fini le chargement
         })
         .catch(() => {
           localStorage.removeItem("accessToken");
           localStorage.removeItem("refreshToken");
           localStorage.removeItem("userData");
           setUser(null);
+          setLoading(false);  // fini le chargement même en erreur
         });
+    } else {
+      setLoading(false);  // pas de token, fini le chargement
     }
   }, []);
 
@@ -70,7 +72,7 @@ export default function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

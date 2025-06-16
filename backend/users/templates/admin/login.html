@@ -1,0 +1,130 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Connexion | Admin</title>
+    <style>
+      body {
+        background-color: #f3f2f7;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        font-family: 'Segoe UI', sans-serif;
+      }
+      .login-container {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+      }
+      .login-logo {
+        width: 200px;
+        height: 100px;
+        object-fit: contain;
+        margin-bottom: 20px;
+      }
+      .submit-row input {
+        background-color: #007bff;
+        color: white;
+        font-weight: 600;
+        border: none;
+        width: 100%;
+        padding: 0.6rem;
+        border-radius: 8px;
+        transition: background-color 0.2s ease-in-out;
+      }
+      .submit-row input:hover {
+        background-color: #0056b3;
+      }
+      .errornote {
+        color: #d9534f;
+        margin-bottom: 1rem;
+      }
+      .form-row {
+        margin-bottom: 1.2rem;
+        text-align: left;
+        position: relative; /* important pour positionner l'œil */
+      }
+      label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 0.3rem;
+      }
+      input[type="text"], input[type="password"] {
+        width: 100%;
+        padding: 0.5rem 2.5rem 0.5rem 0.5rem; /* espace pour l'icône */
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+      }
+      /* Style pour l’icône œil */
+      .toggle-password {
+        position: absolute;
+        top: 35px; /* à ajuster selon la hauteur de ton input */
+        right: 10px;
+        cursor: pointer;
+        width: 20px;
+        height: 20px;
+        fill: #888;
+        user-select: none;
+      }
+      .toggle-password:hover {
+        fill: #000;
+      }
+    </style>
+</head>
+<body>
+  <div class="login-container">
+    <img src="{% static 'logos/orch_1.png' %}" alt="Logo" class="login-logo" />
+    <h2>Admin</h2>
+
+    {% if form.errors %}
+      <p class="errornote">Identifiants incorrects. Veuillez réessayer.</p>
+    {% endif %}
+
+    <form action="" method="post" id="login-form">{% csrf_token %}
+      <div class="form-row">
+        {{ form.username.label_tag }}
+        {{ form.username }}
+      </div>
+      <div class="form-row">
+        {{ form.password.label_tag }}
+        {{ form.password }}
+
+        <!-- Icône œil SVG pour toggle -->
+        <svg class="toggle-password" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" onclick="togglePassword()" aria-label="Afficher/Masquer le mot de passe" role="button" tabindex="0">
+          <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"/>
+          <circle cx="12" cy="12" r="2.5"/>
+        </svg>
+      </div>
+      <div class="submit-row">
+        <input type="submit" value="Se connecter">
+      </div>
+    </form>
+  </div>
+
+  <script>
+    function togglePassword() {
+      const passwordInput = document.querySelector('input[name="password"]');
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+      } else {
+        passwordInput.type = "password";
+      }
+    }
+
+    // Support clavier (entrée ou espace) sur l'icône
+    document.querySelector('.toggle-password').addEventListener('keydown', function(e) {
+      if(e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        togglePassword();
+      }
+    });
+  </script>
+</body>
+</html>

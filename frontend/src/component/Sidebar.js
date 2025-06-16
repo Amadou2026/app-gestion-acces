@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Nav, Spinner, Alert } from "react-bootstrap";
-import { FaFolder, FaFolderOpen, FaHome } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import "../index.css";
 import { AuthContext } from "../context/AuthContext";
 
 export default function Sidebar() {
-  const { user } = useContext(AuthContext); // 👈 utilise le contexte
+  const { user } = useContext(AuthContext);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -31,7 +30,6 @@ export default function Sidebar() {
         return res.json();
       })
       .then((json) => {
-        // json est un tableau de rubriques si le backend est bien configuré
         setData(Array.isArray(json) ? json : json.rubriques || []);
         setLoading(false);
       })
@@ -66,7 +64,6 @@ export default function Sidebar() {
       style={{ width: "240px" }}
     >
       <Nav className="flex-column" variant="pills">
-        {/* ✅ Lien Overview visible si superadmin via AuthContext */}
         {user?.role === "superadmin" && (
           <Nav.Item className="mb-3">
             <Nav.Link
@@ -75,13 +72,11 @@ export default function Sidebar() {
               className={getNavLinkClass}
               end
             >
-              <FaHome />
               <span>Overview</span>
             </Nav.Link>
           </Nav.Item>
         )}
 
-        {/* ✅ Rubriques dynamiques */}
         {data.map(({ title, slug, sous_rubriques }) => (
           <Nav.Item key={slug} className="mb-2">
             <Nav.Link
@@ -90,7 +85,6 @@ export default function Sidebar() {
               className={getNavLinkClass}
               end
             >
-              <FaFolder />
               <span>{title}</span>
             </Nav.Link>
 
@@ -102,7 +96,6 @@ export default function Sidebar() {
                   to={`/rubriques/${encodeURIComponent(slug)}/${encodeURIComponent(srSlug)}`}
                   className={getNavLinkClass}
                 >
-                  <FaFolderOpen size={14} />
                   <span>{srTitle}</span>
                 </Nav.Link>
               ))}

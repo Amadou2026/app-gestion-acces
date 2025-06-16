@@ -30,7 +30,7 @@ class RubriqueViewSet(viewsets.ReadOnlyModelViewSet):
 def user_access_view(request):
     """
     Retourne les rubriques et sous-rubriques accessibles à l'utilisateur connecté,
-    avec title et slug.
+    avec title, slug et powerbi_url.
     """
     user = request.user
     access_entries = UserAccess.objects.filter(user=user).select_related('rubrique', 'sous_rubrique')
@@ -38,22 +38,29 @@ def user_access_view(request):
     data = {}
     for entry in access_entries:
         rubrique = entry.rubrique
-        rubrique_key = rubrique.slug  # ou rubrique.title, mais mieux le slug pour clé unique
+        rubrique_key = rubrique.slug
+
         if rubrique_key not in data:
             data[rubrique_key] = {
                 "title": rubrique.title,
                 "slug": rubrique.slug,
+                "rubrique_powerbi_url": rubrique.powerbi_url,
                 "sous_rubriques": []
             }
+
         if entry.sous_rubrique:
             sous = entry.sous_rubrique
-            # éviter doublons sous-rubriques
-            if sous.slug not in [sr['slug'] for sr in data[rubrique_key]["sous_rubriques"]]:
+            if sous.slug not in [sr["slug"] for sr in data[rubrique_key]["sous_rubriques"]]:
                 data[rubrique_key]["sous_rubriques"].append({
                     "title": sous.title,
-                    "slug": sous.slug
+                    "slug": sous.slug,
+                    "sous_rubrique_powerbi_url": sous.powerbi_url
                 })
 
-    # On retourne une liste
     result = list(data.values())
+
+    # Si l'utilisateur n'est pas superadmin, ne retourner qu'une seule rubrique
+    if user.role != 'superadmin' and result:
+        result = [result[0]]
+
     return Response(result)

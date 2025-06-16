@@ -3,6 +3,9 @@ from django.urls import path, include
 from rest_framework_simplejwt.views import TokenRefreshView
 from users.views import CustomTokenObtainPairView, user_access_view
 
+
+admin.site.login_template = 'admin/login.html'
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/login/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),  # login personnalisé
