@@ -64,7 +64,7 @@ export default function Sidebar() {
       style={{ width: "240px" }}
     >
       <Nav className="flex-column" variant="pills">
-        {user?.role === "superadmin" && (
+        {/* {user?.role === "superadmin" && (
           <Nav.Item className="mb-3">
             <Nav.Link
               as={NavLink}
@@ -75,7 +75,7 @@ export default function Sidebar() {
               <span>Overview</span>
             </Nav.Link>
           </Nav.Item>
-        )}
+        )} */}
 
         {data.map(({ title, slug, sous_rubriques }) => (
           <Nav.Item key={slug} className="mb-2">
