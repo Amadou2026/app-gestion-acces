@@ -44,23 +44,18 @@ def user_access_view(request):
             data[rubrique_key] = {
                 "title": rubrique.title,
                 "slug": rubrique.slug,
-                "rubrique_powerbi_url": rubrique.powerbi_url,
+                "rubrique_powerbi_url": getattr(rubrique, 'powerbi_url', ''),
                 "sous_rubriques": []
             }
 
         if entry.sous_rubrique:
             sous = entry.sous_rubrique
-            if sous.slug not in [sr["slug"] for sr in data[rubrique_key]["sous_rubriques"]]:
+            if sous.slug not in [sr['slug'] for sr in data[rubrique_key]["sous_rubriques"]]:
                 data[rubrique_key]["sous_rubriques"].append({
                     "title": sous.title,
                     "slug": sous.slug,
-                    "sous_rubrique_powerbi_url": sous.powerbi_url
+                    "sous_rubrique_powerbi_url": getattr(sous, 'powerbi_url', '')
                 })
 
     result = list(data.values())
-
-    # Si l'utilisateur n'est pas superadmin, ne retourner qu'une seule rubrique
-    if user.role != 'superadmin' and result:
-        result = [result[0]]
-
     return Response(result)
