@@ -104,7 +104,7 @@ AUTH_PASSWORD_VALIDATORS = [
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # ex: 60 minutes
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120),  # ex: 60*2 minutes
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     # autres configs...
 }
