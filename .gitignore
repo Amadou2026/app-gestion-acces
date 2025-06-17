@@ -13,3 +13,4 @@ build/
 # Général
 .DS_Store
 *.log
+backend/credentials.json
