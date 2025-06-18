@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from django.contrib import admin
-
+from dotenv import load_dotenv
 import users
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-2r&m8h!yyqc6dqex9wl!p)q1y$$j3w-c^&$c5@mwo-d)p!l9nn'
+SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-2r&m8h!yyqc6dqex9wl!p)q1y$$j3w-c^&$c5@mwo-d)p!l9nn")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -46,6 +46,9 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
     ),
 }
 
@@ -110,6 +113,8 @@ SIMPLE_JWT = {
 }
 
 
+load_dotenv()
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'

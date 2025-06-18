@@ -4,7 +4,11 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .models import Rubrique, UserAccess
+
+from django.views.decorators.csrf import csrf_exempt
+from .utils import ask_gemini
+
+from .models import Rubrique, SousRubrique, UserAccess
 from .serializers import RubriqueSerializer, CustomTokenObtainPairSerializer
 
 
@@ -59,3 +63,37 @@ def user_access_view(request):
 
     result = list(data.values())
     return Response(result)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def chatbot_view(request):
+    user = request.user
+    question = request.data.get("question")
+
+    # Récupération des rubriques et sous-rubriques via UserAccess
+    access = UserAccess.objects.filter(user=user).select_related("rubrique", "sous_rubrique")
+
+    # Construction du contexte
+    rubrique_titles = set()
+    sous_rubrique_titles = set()
+
+    for entry in access:
+        if entry.rubrique:
+            rubrique_titles.add(entry.rubrique.title)
+        if entry.sous_rubrique:
+            sous_rubrique_titles.add(entry.sous_rubrique.title)
+
+    rubrique_context_parts = []
+    if rubrique_titles:
+        rubrique_context_parts.append("Rubriques : " + ", ".join(sorted(rubrique_titles)))
+    if sous_rubrique_titles:
+        rubrique_context_parts.append("Sous-rubriques : " + ", ".join(sorted(sous_rubrique_titles)))
+
+    rubrique_context = " | ".join(rubrique_context_parts) or "aucune rubrique disponible"
+
+    # Construction du prompt
+    prompt = f"L'utilisateur pose une question dans le contexte suivant : {rubrique_context}.\n\nVoici sa question : {question}"
+
+    # Appel à Gemini
+    response_text = ask_gemini(prompt, rubrique_context=rubrique_context)
+    return Response({"answer": response_text})

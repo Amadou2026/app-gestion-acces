@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import RubriquePage from "./pages/RubriquesPage";
 import SousRubriquePage from "./pages/SousRubriquePage";
+import ChatbotPopup from "./component/ChatbotPopup";
 
 import { AuthContext } from "./context/AuthContext";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -53,47 +54,51 @@ function App() {
   }
 
   return (
-    <Routes>
-      <Route
-        path="/login"
-        element={user ? <Navigate to={getRedirectAfterLogin()} replace /> : <Login />}
-      />
-      <Route
-        path="/dashboard"
-        element={
-          <PrivateRoute>
-            <Dashboard />
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/rubriques/:rubriqueSlug"
-        element={
-          <PrivateRoute>
-            <RubriquePage />
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/rubriques/:rubriqueSlug/:sousRubriqueSlug"
-        element={
-          <PrivateRoute>
-            <SousRubriquePage />
-          </PrivateRoute>
-        }
-      />
-      {/* Catch-all : redirige vers la page demandée si connecté, sinon login */}
-      <Route
-        path="*"
-        element={
-          user ? (
-            <Navigate to={location.pathname} replace />
-          ) : (
-            <Navigate to="/login" replace />
-          )
-        }
-      />
-    </Routes>
+    <>
+      <Routes>
+        <Route
+          path="/login"
+          element={user ? <Navigate to={getRedirectAfterLogin()} replace /> : <Login />}
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/rubriques/:rubriqueSlug"
+          element={
+            <PrivateRoute>
+              <RubriquePage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/rubriques/:rubriqueSlug/:sousRubriqueSlug"
+          element={
+            <PrivateRoute>
+              <SousRubriquePage />
+            </PrivateRoute>
+          }
+        />
+        {/* Catch-all : redirige vers la page demandée si connecté, sinon login */}
+        <Route
+          path="*"
+          element={
+            user ? (
+              <Navigate to={location.pathname} replace />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+      </Routes>
+      {/* Affiche le chatbot uniquement si user est connecté */}
+    {user && <ChatbotPopup token={localStorage.getItem("access")} />}
+    </>
   );
 }
 
